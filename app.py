@@ -1,12 +1,15 @@
+import os
 from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
+import numpy as np
+import joblib
 
 app = Flask(__name__)
 
-# Load the saved model
-with open('ins_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+# Load the saved pipeline
+model_path = os.path.join(os.getcwd(), 'models', 'ins_model.pkl')
+loaded_pipeline = joblib.load(model_path)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -28,7 +31,7 @@ def predict():
     })
     
     # Make a prediction using the loaded model
-    prediction = model.predict(user_input)
+    prediction = loaded_pipeline.predict(user_input)
 
     # Return the prediction as a JSON response
     return jsonify({'prediction': prediction[0]})
